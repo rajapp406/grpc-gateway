@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package identity;
+
+// Placeholder service definition for Identity
+service IdentityService {
+  rpc Health(HealthRequest) returns (HealthResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
+
+message GetUserRequest {
+  string id = 1;
+  string email = 2;
+}
+message GetUserResponse {
+  string user_id = 1;
+  string email = 2;
+  string name = 3;
+}
+
+
+message HealthRequest {}
+message HealthResponse {
+  string status = 1;
+}
