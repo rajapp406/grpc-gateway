@@ -7,6 +7,8 @@ import helmet from '@fastify/helmet';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { LoginDto } from './modules/auth/dto/login.dto';
+import { RegisterDto } from './modules/auth/dto/register.dto';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
@@ -20,13 +22,19 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: '*', // Adjust for production
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+    credentials: true,
   });
 
   // Global logger (Winston)
   const winstonLogger = WinstonModule.createLogger({
+    level: 'debug',
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      nestWinstonModuleUtilities.format.nestLike('gRPC-Gateway', { prettyPrint: true })
+    ),
     transports: [
       new winston.transports.Console({
         format: winston.format.combine(
@@ -42,13 +50,49 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('gRPC Gateway API')
-    .setDescription('API documentation for the gRPC Gateway')
+    .setTitle('Fitness App API Gateway')
+    .setDescription('API Gateway for Fitness Application\n\n## Authentication\nMost endpoints require a valid JWT token. Use the `/auth/login` endpoint to obtain one.')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth', // This name should be used as @ApiBearerAuth('JWT-auth') in your controllers
+    )
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('user', 'User management endpoints')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+
+  const document = SwaggerModule.createDocument(app, config, {
+    deepScanRoutes: true,
+    operationIdFactory: (controllerKey, methodKey) => methodKey,
+    extraModels: [LoginDto, RegisterDto],
+  });
+
+  SwaggerModule.setup('docs', app, document, {
+    explorer: true,
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: (a: any, b: any) => {
+        const methodsOrder = ['get', 'post', 'put', 'delete', 'patch'];
+        const result = methodsOrder.indexOf(a.get('method')) - methodsOrder.indexOf(b.get('method'));
+        return result === 0 ? a.get('path').localeCompare(b.get('path')) : result;
+      },
+      docExpansion: 'list',
+      filter: true,
+      showRequestDuration: true,
+      defaultModelExpandDepth: 3,
+      defaultModelsExpandDepth: 3,
+      defaultModelRendering: 'example',
+    },
+    customSiteTitle: 'Fitness App API Documentation',
+  });
 
   await app.listen(3000, '0.0.0.0');
 }

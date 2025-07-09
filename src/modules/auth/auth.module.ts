@@ -13,7 +13,7 @@ import { AuthController } from './auth.controller';
         options: {
           package: 'auth',
           protoPath: join(__dirname, '../../../proto/auth.proto'),
-          url: 'localhost:50051',
+          url: 'localhost:50599',
         },
       },
     ]),
