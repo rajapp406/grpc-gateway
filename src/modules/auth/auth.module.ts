@@ -25,6 +25,15 @@ import { AuthController } from './auth.controller';
           url: 'localhost:' + '50544',
         },
       },
+      {
+        name: 'CLIENT_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'client',
+          protoPath: join(__dirname, '../../../../common-modules/protocol/client.proto'),
+          url: 'localhost:' + '50522',
+        },
+      },
     ]),
   ],
   providers: [AuthService],

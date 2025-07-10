@@ -99,7 +99,7 @@ async function bootstrap() {
     customSiteTitle: 'Fitness App API Documentation',
   });
 
-  await app.listen(process.env.PORT || 3000, '0.0.0.0');
+  await app.listen(process.env.PORT || 3800, '0.0.0.0');
 }
 
 bootstrap();

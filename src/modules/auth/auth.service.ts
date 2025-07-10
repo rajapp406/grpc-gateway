@@ -14,24 +14,31 @@ interface AuthServiceGrpc {
 export class AuthService implements OnModuleInit {
   public grpcService?: AuthServiceGrpc;
   public validateService?: AuthServiceGrpc;
+  public clientService?: AuthServiceGrpc;
 
   constructor(
     @Inject('AUTH_PACKAGE') private readonly client: ClientGrpc,
-    @Inject('VALIDATE_PACKAGE') private readonly validateClient: ClientGrpc
+    @Inject('VALIDATE_PACKAGE') private readonly validateClient: ClientGrpc,
+    @Inject('CLIENT_PACKAGE') private readonly clientRpc: ClientGrpc
+
   ) {}
 
   onModuleInit() {
     this.grpcService = this.client.getService<AuthServiceGrpc>('AuthService');
     this.validateService = this.validateClient.getService<AuthServiceGrpc>('ValidateService');
-
+    this.clientService = this.clientRpc.getService<AuthServiceGrpc>('ClientService');
   }
 
   // Implement methods to call gRPC endpoints
 
   async verifyToken(data: { token: string }) {
-    if (!this.validateService) throw new Error('gRPC service not initialized');
-    return this.validateService.fetchUser({ userId: 'data.token' }).toPromise();
-   // return this.grpcService.VerifyToken(data).toPromise();
+    if (!this.clientService) throw new Error('gRPC service not initialized');
+    return this.clientService.fetchUser({ userId: data.token }).toPromise();
+  }
+
+  async registerUser(data: { token: string }) {
+    if (!this.clientService) throw new Error('gRPC service not initialized');
+    return this.clientService.fetchUser({ userId: data.token }).toPromise();
   }
 
   async register(data: { email: string; password: string; name: string }) {
