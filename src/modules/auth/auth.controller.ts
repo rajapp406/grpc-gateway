@@ -11,10 +11,11 @@ export class AuthController {
   @Get('health')
   async health() {
     try {
-      if (!this.authService.grpcService) {
+      if (!this.authService.validateService) {
         throw new Error('gRPC service not initialized');
       }
-      const result = await this.authService.grpcService.Health({}).toPromise();
+      const result = await this.authService.validateService.fetchUser({ userId: 'test123' }).toPromise();
+      //const result = await this.authService.grpcService.Health({}).toPromise();
       return result;
     } catch (error) {
       return { status: 'error', error: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error) };

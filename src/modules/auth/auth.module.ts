@@ -13,7 +13,16 @@ import { AuthController } from './auth.controller';
         options: {
           package: 'auth',
           protoPath: join(__dirname, '../../../proto/auth.proto'),
-          url: 'localhost:50599',
+          url: 'localhost:' + process.env.GRPC_PORT,
+        },
+      },
+      {
+        name: 'VALIDATE_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'validate',
+          protoPath: join(__dirname, '../../../../common-modules/protocol/validate.proto'),
+          url: 'localhost:' + '50544',
         },
       },
     ]),
@@ -22,4 +31,8 @@ import { AuthController } from './auth.controller';
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+  constructor() {
+    console.log('AuthModule initialized', join(__dirname, '../../../proto/auth.proto'));
+  }
+}

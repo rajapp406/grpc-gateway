@@ -15,7 +15,7 @@ import { UserService } from './user.service';
         options: {
           package: 'identity',
           protoPath: join(__dirname, '../../../proto/identity.proto'),
-          url: 'localhost:50052',
+          url: 'localhost:' + process.env.GRPC_USER_SERVICE_PORT,
         },
       },
     ]),

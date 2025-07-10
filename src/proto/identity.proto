@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-service IdentityService {
+service UserService {
   rpc Health(HealthRequest) returns (HealthResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
 }

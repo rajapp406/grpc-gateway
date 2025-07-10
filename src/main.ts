@@ -9,10 +9,15 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoginDto } from './modules/auth/dto/login.dto';
 import { RegisterDto } from './modules/auth/dto/register.dto';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
+  const grpcPort = process.env.GRPC_PORT;
+  console.log('gRPC port:', grpcPort);
+  const port = process.env.PORT;
+  console.log('Port:', port);
   // Security headers
   // Type assertion used to resolve Fastify/NestJS type mismatch (safe per Fastify + NestJS docs)
   await app.register(helmet as any);
@@ -94,7 +99,7 @@ async function bootstrap() {
     customSiteTitle: 'Fitness App API Documentation',
   });
 
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 
 bootstrap();
