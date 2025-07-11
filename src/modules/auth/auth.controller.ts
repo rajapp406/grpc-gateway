@@ -41,7 +41,8 @@ export class AuthController {
   @Post('login')
   async login(@Body() body: LoginDto) {
     try {
-      return await this.authService.login(body);
+      console.log('loginnnnnn', body, this.authService.grpcService)
+      return await this.authService.grpcService?.login(body).toPromise();
     } catch (error) {
       return { status: 'error', error: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error) };
     }

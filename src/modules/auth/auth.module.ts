@@ -25,7 +25,7 @@ dotenv.config();
           protoPath: join(__dirname, '../../../../common-modules/protocol/validate.proto'),
           url: 'localhost:' + process.env.VALIDATE_SERVICE_PORT,
         },
-      },
+      }
     ]),
   ],
   providers: [AuthService],
