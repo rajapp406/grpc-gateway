@@ -6,7 +6,7 @@ interface AuthServiceGrpc {
   fetchUser(data: { userId: string }): Observable<any>;
   Health(data: { }): Observable<{ status: string }>;
   login(data: { email: string; password: string }): Observable<{ user_id: string; email: string; access_token: string }>;
-  Register(data: { email: string; password: string; name: string }): Observable<{ user_id: string; email: string; access_token: string }>;
+  createUser(data: { email: string; password: string; name: string }): Observable<{ user_id: string; email: string; access_token: string }>;
   Login(data: { email: string; password: string }): Observable<{ user_id: string; email: string; access_token: string }>;
   VerifyToken(data: { token: string }): Observable<{ valid: boolean; user?: any }>;
 }
@@ -36,7 +36,7 @@ export class AuthService implements OnModuleInit {
 
   async register(data: { email: string; password: string; name: string }) {
     if (!this.validateService) throw new Error('gRPC service not initialized');
-    return this.validateService.Register(data).toPromise();
+    return this.validateService.createUser(data).toPromise();
   }
 
   async login(data: { email: string; password: string }) {
