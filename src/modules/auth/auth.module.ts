@@ -3,7 +3,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 @Module({
   imports: [
     ClientsModule.register([
@@ -11,9 +12,9 @@ import { AuthController } from './auth.controller';
         name: 'AUTH_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          package: 'auth',
-          protoPath: join(__dirname, '../../../proto/auth.proto'),
-          url: 'localhost:' + process.env.GRPC_PORT,
+          package: 'check',
+          protoPath: join(__dirname, '../../../../common-modules/protocol/check.proto'),
+          url: 'localhost:' + '50588',
         },
       },
       {
@@ -22,7 +23,7 @@ import { AuthController } from './auth.controller';
         options: {
           package: 'validate',
           protoPath: join(__dirname, '../../../../common-modules/protocol/validate.proto'),
-          url: 'localhost:' + '50544',
+          url: 'localhost:' + process.env.VALIDATE_SERVICE_PORT,
         },
       },
     ]),

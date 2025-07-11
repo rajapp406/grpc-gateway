@@ -14,23 +14,25 @@ interface AuthServiceGrpc {
 export class AuthService implements OnModuleInit {
   public grpcService?: AuthServiceGrpc;
   public validateService?: AuthServiceGrpc;
+  public authService?: AuthServiceGrpc;
 
   constructor(
     @Inject('AUTH_PACKAGE') private readonly client: ClientGrpc,
+    @Inject('AUTH_PACKAGE') private readonly authServiceClient: ClientGrpc,
     @Inject('VALIDATE_PACKAGE') private readonly validateClient: ClientGrpc
   ) {}
 
   onModuleInit() {
-    this.grpcService = this.client.getService<AuthServiceGrpc>('AuthService');
+    this.grpcService = this.client.getService<AuthServiceGrpc>('ValidateService');
     this.validateService = this.validateClient.getService<AuthServiceGrpc>('ValidateService');
-
+    this.authService = this.authServiceClient.getService<AuthServiceGrpc>('ValidateService');
   }
 
   // Implement methods to call gRPC endpoints
 
   async verifyToken(data: { token: string }) {
-    if (!this.validateService) throw new Error('gRPC service not initialized');
-    return this.validateService.fetchUser({ userId: 'data.token' }).toPromise();
+    if (!this.authService) throw new Error('gRPC service not initialized');
+    return this.authService.VerifyToken(data).toPromise();
    // return this.grpcService.VerifyToken(data).toPromise();
   }
 
