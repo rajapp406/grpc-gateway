@@ -21,12 +21,22 @@ export class RegisterDto {
   password!: string;
 
   @ApiProperty({
-    description: 'User full name',
+    description: 'User first name',
     minLength: 2,
-    example: 'John Doe',
+    example: 'John',
     required: true
   })
   @IsString()
   @MinLength(2)
-  name!: string;
+  firstName!: string;
+
+  @ApiProperty({
+    description: 'User last name',
+    minLength: 2,
+    example: 'Doe',
+    required: true
+  })
+  @IsString()
+  @MinLength(2)
+  lastName!: string;
 }

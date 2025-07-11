@@ -28,6 +28,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() body: RegisterDto) {
     try {
+      console.log('register', body);
       return await this.authService.grpcService?.createUser(body).toPromise();
     } catch (error) {
       return { status: 'error', error: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error) };
