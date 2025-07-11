@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
     // Delegate token verification to check-service via gRPC
     try {
       // Assuming check-service exposes a VerifyToken RPC. Adjust as needed.
-      const result = await this.authService.verifyToken({ token });
+      const result = await this.authService.verifyToken({ accessToken: token });
       if (!result || !result.valid) {
         throw new UnauthorizedException('Invalid token');
       }

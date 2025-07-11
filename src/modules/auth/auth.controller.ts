@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ValidateDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -49,4 +50,17 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: 'Validate a user' })
+  @ApiResponse({ status: 200, description: 'User validated successfully.' })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiBody({ type: ValidateDto })
+  @Post('validate-token')
+  async validateToken(@Body() body: ValidateDto) {
+    try {
+      console.log('validateToken', body, this.authService.grpcService)
+      return await this.authService.grpcService?.validateToken(body).toPromise();
+    } catch (error) {
+      return { status: 'error', error: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error) };
+    }
+  }
 }

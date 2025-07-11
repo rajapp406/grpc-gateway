@@ -20,3 +20,13 @@ export class LoginDto {
   @MinLength(6)
   password!: string;
 }
+
+export class ValidateDto {
+  @ApiProperty({
+    description: 'User access token',
+    example: '123456',
+    required: true
+  })
+  @IsString()
+  accessToken!: string;
+}
