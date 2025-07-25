@@ -3,6 +3,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { ClientService } from './client.service';
 import { ClientController } from './client.controller';
+import { clientProto, PROTO_DIR } from '../../common/utils/protos';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { ClientController } from './client.controller';
         transport: Transport.GRPC,
         options: {
           package: 'client',
-          protoPath: join(__dirname, '../../../../common-modules/protocol/client.proto'),
+          protoPath: clientProto,
           url: 'localhost:' + '50522',
         },
       },
@@ -24,6 +25,6 @@ import { ClientController } from './client.controller';
 })
 export class ClientModule {
   constructor() {
-    console.log('ClientModule initialized', join(__dirname, '../../../../common-modules/protocol/client.proto'));
+    console.log('ClientModule initialized', PROTO_DIR);
   }
 }

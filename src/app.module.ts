@@ -3,6 +3,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { ClientModule } from './modules/client/client.module';
+import { WorkoutModule } from './modules/workout/workout.module';
 
 
 @Module({
@@ -10,6 +11,7 @@ import { ClientModule } from './modules/client/client.module';
     AuthModule,
     UserModule,
     ClientModule,
+    WorkoutModule,
   ],
 })
 export class AppModule implements NestModule {

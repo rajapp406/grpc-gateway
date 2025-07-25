@@ -4,7 +4,11 @@ import { join } from 'path';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import * as dotenv from 'dotenv';
+import { checkProto, validateProto, PROTO_DIR } from '../../common/utils/protos';
+
 dotenv.config();
+
+
 @Module({
   imports: [
     ClientsModule.register([
@@ -13,7 +17,7 @@ dotenv.config();
         transport: Transport.GRPC,
         options: {
           package: 'check',
-          protoPath: join(__dirname, '../../../../common-modules/protocol/check.proto'),
+          protoPath:checkProto,
           url: 'localhost:' + '50588',
         },
       },
@@ -22,7 +26,7 @@ dotenv.config();
         transport: Transport.GRPC,
         options: {
           package: 'validate',
-          protoPath: join(__dirname, '../../../../common-modules/protocol/validate.proto'),
+          protoPath: validateProto,
           url: 'localhost:' + process.env.VALIDATE_SERVICE_PORT,
         },
       }
@@ -34,6 +38,6 @@ dotenv.config();
 })
 export class AuthModule {
   constructor() {
-    console.log('AuthModule initialized', join(__dirname, '../../../proto/auth.proto'));
+    console.log('AuthModule initialized with proto directory:', PROTO_DIR);
   }
 }
