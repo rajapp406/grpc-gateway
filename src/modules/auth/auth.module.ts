@@ -18,16 +18,7 @@ dotenv.config();
         options: {
           package: 'check',
           protoPath:checkProto,
-          url: 'localhost:' + '50588',
-        },
-      },
-      {
-        name: 'VALIDATE_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'validate',
-          protoPath: validateProto,
-          url: 'localhost:' + process.env.VALIDATE_SERVICE_PORT,
+          url: 'check-service:' + '50588',
         },
       }
     ]),

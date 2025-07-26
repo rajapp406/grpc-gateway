@@ -1,0 +1,20 @@
+services:
+  grpc-gateway:
+    container_name: grpc-gateway
+    build: .
+    ports:
+      - "3900:3900" # HTTP
+      - "50599:50599" # gRPC
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - CHECK_SERVICE_URL=check-service:50588
+      - CLIENT_SERVICE_URL=client-service:50522
+    networks:
+      - fitness-network
+    restart: unless-stopped
+
+networks:
+  fitness-network:
+    external: true

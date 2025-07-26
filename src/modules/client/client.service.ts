@@ -1,6 +1,6 @@
-import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { Injectable, OnModuleInit, Inject, Logger } from '@nestjs/common';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { Observable, catchError, firstValueFrom } from 'rxjs';
 
 interface ClientServiceGrpc {
   fetchUser(data: { userId: string }): Observable<any>;
@@ -22,12 +22,14 @@ interface ClientServiceGrpc {
 
 @Injectable()
 export class ClientService implements OnModuleInit {
-  public clientService?: ClientServiceGrpc;
+  public clientService: ClientServiceGrpc | null = null;
+  private readonly logger = new Logger(ClientService.name);
 
   constructor(
     @Inject('CLIENT_PACKAGE') private readonly clientRpc: ClientGrpc
-
-  ) {}
+  ) {
+    this.logger.log('ClientService initialized');
+  }
 
   onModuleInit() {
     this.clientService = this.clientRpc.getService<ClientServiceGrpc>('ClientService');
@@ -49,10 +51,46 @@ export class ClientService implements OnModuleInit {
     return this.clientService.createOrUpdateUserProfile(data).toPromise();
   }
 
-  async fetchUser(data: { userId: string }) {
-    console.log('fetchUser', data);
-    if (!this.clientService) throw new Error('gRPC service not initialized');
-    return this.clientService.fetchUser({ userId: data.userId }).toPromise();
+  async fetchUser(userId: string) {
+    this.logger.log(`Fetching user with ID: ${userId}`);
+    
+    if (!this.clientService) {
+      this.logger.error('gRPC service not initialized');
+      return { 
+        status: 'error',
+        message: 'Service unavailable',
+        details: 'gRPC service not initialized'
+      };
+    }
+
+    try {
+      const result = await firstValueFrom(
+        this.clientService.getUserProfile({ userId }).pipe(
+          catchError(error => {
+            const errorMessage = error?.message || 'Failed to fetch user';
+            const errorDetails = error?.details || 'No additional details available';
+            this.logger.error(`Error fetching user ${userId}: ${errorMessage}`, errorDetails);
+            throw new RpcException({
+              code: error?.code || 13,
+              message: errorMessage,
+              details: errorDetails
+            });
+          })
+        )
+      );
+      
+      this.logger.log(`Successfully fetched user: ${userId}`);
+      return result;
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Internal server error';
+      const errorDetails = error?.details || 'An unexpected error occurred';
+      this.logger.error(`Failed to fetch user ${userId}: ${errorMessage}`, errorDetails);
+      return { 
+        status: 'error',
+        message: errorMessage,
+        details: errorDetails
+      };
+    }
   }
 
   async getUserProfile(data: { userId: string }) {

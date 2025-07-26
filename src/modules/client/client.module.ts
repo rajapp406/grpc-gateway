@@ -14,7 +14,20 @@ import { clientProto, PROTO_DIR } from '../../common/utils/protos';
         options: {
           package: 'client',
           protoPath: clientProto,
-          url: 'localhost:' + '50522',
+          url: 'client-service:50522',
+          loader: {
+            keepCase: true,
+            longs: String,
+            enums: String,
+            defaults: true,
+            oneofs: true,
+            includeDirs: [PROTO_DIR],
+          },
+          channelOptions: {
+            'grpc.dns_min_time_between_resolutions_ms': 5000,
+            'grpc.enable_retries': 1,
+            'grpc.keepalive_timeout_ms': 10000,
+          },
         },
       },
     ]),

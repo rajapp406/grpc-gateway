@@ -1,6 +1,7 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { ClientModule } from './modules/client/client.module';
 import { WorkoutModule } from './modules/workout/workout.module';
@@ -8,10 +9,22 @@ import { WorkoutModule } from './modules/workout/workout.module';
 
 @Module({
   imports: [
+    // Rate limiting configuration
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // Time window in milliseconds (1 minute)
+        limit: 100, // Maximum number of requests within the TTL
+      },
+    ]),
     AuthModule,
-    UserModule,
     ClientModule,
     WorkoutModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard, // Apply throttling globally
+    },
   ],
 })
 export class AppModule implements NestModule {
