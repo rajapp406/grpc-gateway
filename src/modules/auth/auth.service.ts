@@ -11,6 +11,7 @@ interface AuthServiceGrpc {
   Login(data: { email: string; password: string }): Observable<{ user_id: string; email: string; access_token: string }>;
   VerifyToken(data: { accessToken: string }): Observable<{ valid: boolean; user?: any }>;
   validateToken(data: { accessToken: string }): Observable<{ valid: boolean; user?: any }>;
+  googleOAuth(data: { idToken: string }): Observable<any>;
 }
 
 @Injectable()

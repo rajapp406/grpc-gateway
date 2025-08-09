@@ -14,7 +14,7 @@ import { clientProto, PROTO_DIR } from '../../common/utils/protos';
         options: {
           package: 'client',
           protoPath: clientProto,
-          url: 'client-service:50522',
+          url: process.env.CLIENT_SERVICE_URL,
           loader: {
             keepCase: true,
             longs: String,

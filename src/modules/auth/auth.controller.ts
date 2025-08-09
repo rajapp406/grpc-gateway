@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
+import { GoogleAuthDto, RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ValidateDto } from './dto/login.dto';
 
@@ -36,6 +36,18 @@ export class AuthController {
     }
   }
 
+  @ApiResponse({ status: 201, description: 'User registered successfully.' })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiBody({ type: GoogleAuthDto })
+  @Post('googleAuth')
+  async googleAuth(@Body() body: GoogleAuthDto) {
+    try {
+      console.log('register', body);
+      return await this.authService.grpcService?.googleOAuth(body).toPromise();
+    } catch (error) {
+      return { status: 'error', error: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error) };
+    }
+  }
   @ApiOperation({ summary: 'Login a user' })
   @ApiResponse({ status: 200, description: 'User logged in successfully.' })
   @ApiResponse({ status: 400, description: 'Validation failed.' })

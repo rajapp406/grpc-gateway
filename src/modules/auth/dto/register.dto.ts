@@ -40,3 +40,14 @@ export class RegisterDto {
   @MinLength(2)
   lastName!: string;
 }
+
+export class GoogleAuthDto {
+  @ApiProperty({
+    description: 'User id token',
+    minLength: 2,
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... ',
+    required: true
+  })
+    @IsString()
+    idToken!: string;
+}
